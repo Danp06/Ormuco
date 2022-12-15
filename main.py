@@ -15,14 +15,10 @@ password = "ILOVECLOUD2022"
 token_id = keystone.login(user,password)
 headers = {"X-Auth-Token": token_id}
 
+print(headers)
 #List Resources
 images = glance.List_imagen(headers)
 networks = neutron.List_networks(headers)
 flavors = nova.List_flavors(headers)
 keypairs = nova.List_keypairs(headers)
 security_groups = neutron.List_security_group(headers)
-
-server_specification = utils.server_specification('ubuntu-18',images,'default',networks,'general.pico.uat.linux'
-                                                  ,flavors,'Daniel_Pena',keypairs,'web',security_groups)
-
-instance = nova.create_servers(headers,server_specification,'Daniel_instance')

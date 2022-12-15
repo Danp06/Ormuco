@@ -1,7 +1,17 @@
+def loop(lista):
+    for i in lista:
+        return i
+
 def get_resource_id(name,resources):
     for resource in resources:
         if name in resource['name']:
             return resource['id']
+    return None
+
+def get_resource(name,resources):
+    for resource in len(resources):
+        if name in resource['id']:
+            return resource
     return None
 
 def get_resource_key(name,resources):
@@ -10,27 +20,38 @@ def get_resource_key(name,resources):
             return resource['public_key']
     return None
 
-def server_specification(name_image, images, name_network, networks, name_flavor, flavors, 
-                         name_keypair, keypairs, name_segurity_group, segurity_groups):
+def get_ipDown(resources):
+    for resource in resources:
+        if 'DOWN' in resource['status']:
+            return resource['floating_ip_address']
+    return None
+
+
+def server_specification(data):
+    namei = 'ubuntu-18'
+    namen = 'default'
+    namekey = 'Daniel_Pena'
+    namefla = 'general.pico.uat.linux'
+    namesecu = 'web'
     return {
         'imagen':{
-            'name': name_image,
-            'id': get_resource_id(name_image,images)
+            'name': namei,
+            'id': get_resource_id(namei,data['imagen']['images'])
         },
         'network':{
-            'name': name_network,
-            'id': get_resource_id(name_network,networks)
+            'name': namen,
+            'id': get_resource_id(namen,data['network'])
         },
         'keypair':{
-            'name': name_keypair,
-            'id': get_resource_key(name_keypair,keypairs)
+            'name': namekey,
+            'id': get_resource_key(namekey,data['keypair'])
         },
         'flavor':{
-            'name': name_flavor,
-            'id': get_resource_id(name_flavor,flavors)
+            'name': namefla,
+            'id': get_resource_id(namefla,data['flavor'])
         },
         'security_group':{
-            'name': name_network,
-            'id': get_resource_id(name_segurity_group,segurity_groups)
+            'name': namesecu,
+            'id': get_resource_id(namesecu,data['security_group'])
         }
     }

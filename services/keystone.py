@@ -25,7 +25,7 @@ def payload(user,password):
 
 def login(user,password):
     token = requests.post(url=f"{env_url}:{port}/v3/auth/tokens", json=payload(user,password))
-    return token.json()['token']['id']
+    return {"X-Auth-Token": token.json()['token']['id']}
 
 def get_project_id(user,password):
     token = requests.post(url=f"{env_url}:{port}/v3/auth/tokens", json=payload(user,password))

@@ -16,10 +16,7 @@ def List_address_scopes(headers,id):
    return requests.get(url=f"{env_url}:{port}/v2.0/address-scopes/{id}", headers=headers).json()['address_scope']
 
 def List_floatingips(headers):
-   return requests.get(url=f"{env_url}:{port}/v2.0/floatingips", headers=headers).json()['address_scope']
-
-def asign_floatingips(headers):
-   return requests.post(url=f"{env_url}:{port}/v2.0/floatingips", headers=headers).json()['floatingip']
+   return requests.get(url=f"{env_url}:{port}/v2.0/floatingips", headers=headers).json()['floatingips']
 
 def List_security_group(headers):
    return requests.get(url=f"{env_url}:{port}/v2.0/security-groups", headers=headers).json()['security_groups']

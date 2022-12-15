@@ -1,0 +1,87 @@
+import requests
+
+key_name = None
+
+def InformacionCrearIntancia(x,y,z):
+    information_server = {}
+    # Login
+    env_url = "https://api-uat-001.ormuco.com"
+    Keystone_port = "5000"
+    payload = {
+        "auth": {
+            "identity": {
+                "methods": [
+                    "password"
+                ],
+                "password": {
+                    "user": {
+                        "name": "workshop2022@utb.edu.co",
+                        "domain": {
+                            "name": "Default"
+                        },
+                        "password": "ILOVECLOUD2022"
+                    }
+                }
+            }
+        }
+    }
+
+    token = requests.post(url=f"{env_url}:{Keystone_port}/v3/auth/tokens", json=payload)
+    information_server['token_id'] = token.json()['token']['id']
+
+    headers = {"X-Auth-Token": information_server.get('token_id')}
+
+    # List imagens
+    imagen_port = "9292"
+    listimages = requests.get(url=f"{env_url}:{imagen_port}/v2/images", headers=headers).json()['images']
+
+    for image in listimages:
+        if x in image['name']:
+            information_server['images'] = {'name': image.get('name'), 'id': image.get('id')}
+
+    networks_port = "9696"
+    listnetwork = requests.get(url=f"{env_url}:{networks_port}/v2.0/networks", headers=headers).json()['networks']
+
+    for net in listnetwork:
+        if y in net['name']:
+            information_server['network'] = {'name': net.get('name'), 'id': net.get('id')}
+
+    flavor_port = "8774/v2.1"
+    listflavor = requests.get(url=f"{env_url}:{flavor_port}/flavors", headers=headers).json()['flavors']
+
+    for flav in listflavor:
+        if z in flav['name']:
+            information_server['flavor'] = {'name': flav.get('name'), 'id': flav.get('id')}
+
+    return information_server
+
+def create_instance(info,instance_name):
+    env_url = "https://api-uat-001.ormuco.com"
+    url = f"{env_url}:8774/v2.1/servers"
+    headers = {"X-Auth-Token": info.get('token_id')}
+    data = {
+        "server": {
+            "name": instance_name,
+            "imageRef": info['images']['id'],
+            "flavorRef": info['flavor']['id'],
+            "networks": [{"uuid": info['network']['id']}],
+            "min_count": 1,
+            "max_count": 1,
+            "config_drive": True,
+            "block_device_mapping_v2": [
+                {"uuid": info['images']['id'], "source_type": "image", "boot_index": 0,
+                 "delete_on_termination": True}],
+            "metadata": {"source_image": info['images']['id']}
+        }
+    }
+    if key_name:
+        data["server"]["key_name"] = key_name
+
+    response = requests.post(url=url, headers=headers, json=data)
+    response.raise_for_status()
+    return response.json()["server"]
+
+if __name__ == "__main__":
+    Info = InformacionCrearIntancia('ubuntu-18','default-network','general.pico.uat.linux')
+    Instancia = create_instance(Info,'Server_Danielpena')
+    print(Instancia)
